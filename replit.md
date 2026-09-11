@@ -1,44 +1,49 @@
-# [Project name]
+# Task Tracker
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A responsive task tracker for creating, completing, viewing, and deleting tasks with local SQLite persistence.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/api-server run dev` — run the API server
+- `pnpm --filter @workspace/task-tracker run dev` — run the web interface
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- `DATABASE_PATH` — optional path to the local SQLite file; defaults to `database.sqlite`
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
 - API: Express 5
-- DB: PostgreSQL + Drizzle ORM
+- DB: SQLite via better-sqlite3
 - Validation: Zod (`zod/v4`), `drizzle-zod`
 - API codegen: Orval (from OpenAPI spec)
 - Build: esbuild (CJS bundle)
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- API contract: `lib/api-spec/openapi.yaml`
+- Task API: `artifacts/api-server/src/routes/tasks.ts`
+- SQLite setup and startup table creation: `artifacts/api-server/src/lib/sqlite.ts`
+- Web interface: `artifacts/task-tracker/src/`
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The app uses a local SQLite file as requested instead of the workspace's default PostgreSQL helper.
+- The API creates the `tasks` table on startup with `CREATE TABLE IF NOT EXISTS`, so a fresh environment can run without a migration step.
+- OpenAPI remains the source of truth for the task API and generates both server validation schemas and frontend React Query hooks.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+Users can add tasks with descriptions, see active and completed work, toggle completion, filter the list, and delete tasks. A summary endpoint powers the overview counts.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+The user requested a Node.js + Express app backed by a local `database.sqlite` file and an environment configuration file.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+The actual `.env` file is kept out of source edits; copy `artifacts/api-server/.env.example` to `.env` or set `DATABASE_PATH` in the environment when changing the SQLite location.
 
 ## Pointers
 
